@@ -3,8 +3,13 @@
 // @description     Keeps checking if autoplay is enabled and disables it
 // @namespace       https://github.com/tadwohlrapp
 // @author          Tad Wohlrapp
-// @version         0.0.1
+// @version         0.0.2
 // @license         MIT
+// @homepageURL     https://github.com/tadwohlrapp/disable-youtube-autoplay
+// @supportURL      https://github.com/tadwohlrapp/disable-youtube-autoplay/issues
+// @updateURL       https://greasyfork.org/scripts/483523/code/script.meta.js
+// @downloadURL     https://greasyfork.org/scripts/483523/code/script.user.js
+// @icon            https://github.com/tadwohlrapp/disable-youtube-autoplay/raw/main/icon.png
 // @match           https://www.youtube.com/*
 // @grant           none
 // ==/UserScript==
