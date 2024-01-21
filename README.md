@@ -1,8 +1,8 @@
 # Disable YouTube Autoplay
 
-Recently, it appears that YouTube has introduced a new type of anti-feature that continually re-enables autoplay for videos. Even after disabling autoplay, it becomes enabled again within a minute, and this cycle repeats incessantly.
+Recently, it seems that YouTube has introduced a new type of anti-feature that consistently re-enables autoplay for videos. Even after disabling autoplay, it reverts to being enabled again within a minute, and this cycle repeats continuously.
 
-To address this issue, I wrote this simple userscript. It continuously checks every two seconds to see if autoplay is enabled, and if it is, the script promptly disables it once more.
+To tackle this issue, I have developed this simple userscript. It checks every second if autoplay is enabled, and if it is, the script promptly disables it once more. Additionally, a small counter within the autoplay toggle button displays how many times autoplay has been deactivated for the current video.
 
 ## Installation
 
