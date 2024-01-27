@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name            Disable YouTube Autoplay
-// @description     Keeps checking if autoplay is enabled and disables it
+// @description     Keeps checking if autoplay got enabled by itself and disables it. This stops YouTube from forcing you to watch some random video next after the one you're currently watching ends, even if you disabled autoplay.
 // @namespace       https://github.com/tadwohlrapp
 // @author          Tad Wohlrapp
-// @version         0.0.3
+// @version         0.1.0
 // @license         MIT
 // @homepageURL     https://github.com/tadwohlrapp/disable-youtube-autoplay
 // @supportURL      https://github.com/tadwohlrapp/disable-youtube-autoplay/issues
@@ -14,42 +14,35 @@
 // @grant           none
 // ==/UserScript==
 
-let counter
-const isVideo = location.pathname.startsWith("/watch")
+const fightAutoplay = () => {
+  if (!location.pathname.startsWith('/watch')) return
+  let counter = 0
+  console.info('[Disable YouTube Autoplay]: Video detected. Autoplay deactivation counter: 0')
+  const autoplayButton = document.querySelector('.ytp-autonav-toggle-button')
+  autoplayButton.dataset.counter = '⏸'
 
-function resetCount() {
-  if (isVideo) counter = 0
+  setInterval(() => {
+    if (autoplayButton.getAttribute('aria-checked') === 'true') {
+      autoplayButton.click()
+      counter++
+      autoplayButton.dataset.counter = counter
+      console.info(`[Disable YouTube Autoplay]: Autoplay deactivation counter: ${counter} (${new Date().toLocaleTimeString()})`)
+    }
+  }, 1000)
+}
+
+const addGlobalStyle = (css) => {
+  const head = document.getElementsByTagName('head')[0]
+  if (!head) return
+  const style = document.createElement('style')
+  style.innerHTML = css
+  head.appendChild(style)
 }
 
 (function () {
-  'use strict';
-
-  window.addEventListener("yt-navigate-finish", resetCount, true)
-  resetCount()
-
-  setInterval(() => {
-    if (!isVideo) return
-
-    const autoplayButton = document.querySelector('button[data-tooltip-target-id="ytp-autonav-toggle-button"]')
-    const autoplayBadge = document.querySelector('.ytp-autonav-toggle-button')
-    autoplayBadge.dataset.counter = counter > 0 ? counter : '⏸'
-
-    if (autoplayBadge.getAttribute('aria-checked') === 'true') {
-      autoplayButton.click()
-      counter++
-      autoplayBadge.dataset.counter = counter
-      console.log(`[Disable YouTube Autoplay]: Autoplay deactivation counter: ${counter} (${new Date().toLocaleTimeString()})`)
-    }
-  }, 1000)
-
-  function addGlobalStyle(css) {
-    const head = document.getElementsByTagName('head')[0]
-    if (!head) return
-    const style = document.createElement('style')
-    style.innerHTML = css
-    head.appendChild(style)
-  }
-
+  'use strict'
+  window.addEventListener('yt-navigate-finish', fightAutoplay, true)
+  fightAutoplay()
   addGlobalStyle(`
     .ytp-autonav-toggle-button[aria-checked=false]:after {
       content: attr(data-counter);
@@ -69,4 +62,4 @@ function resetCount() {
     }
   `)
 
-})();
+})()
