@@ -3,7 +3,7 @@
 // @description     Keeps checking if autoplay got enabled by itself and disables it. This stops YouTube from forcing you to watch some random video next after the one you're currently watching ends, even if you disabled autoplay.
 // @namespace       https://github.com/tadwohlrapp
 // @author          Tad Wohlrapp
-// @version         0.1.0
+// @version         0.2.0
 // @license         MIT
 // @homepageURL     https://github.com/tadwohlrapp/disable-youtube-autoplay
 // @supportURL      https://github.com/tadwohlrapp/disable-youtube-autoplay/issues
@@ -14,21 +14,28 @@
 // @grant           none
 // ==/UserScript==
 
-const fightAutoplay = () => {
-  if (!location.pathname.startsWith('/watch')) return
-  let counter = 0
-  console.info('[Disable YouTube Autoplay]: Video detected. Autoplay deactivation counter: 0')
-  const autoplayButton = document.querySelector('.ytp-autonav-toggle-button')
-  autoplayButton.dataset.counter = '⏸'
+let counter
+const autoplayButton = () => document.querySelector('.ytp-autonav-toggle-button')
 
-  setInterval(() => {
-    if (autoplayButton.getAttribute('aria-checked') === 'true') {
-      autoplayButton.click()
+const initializeAutoplayDisabler = () => {
+  if (!location.pathname.startsWith('/watch')) return
+  if (!autoplayButton()) { return setTimeout(() => { initializeAutoplayDisabler() }, 1000) }
+  counter = 0
+  console.info('[Disable YouTube Autoplay]: Video detected. Autoplay deactivation counter: 0')
+  autoplayButton().dataset.counter = '⏸'
+  fightAutoplay()
+}
+
+const fightAutoplay = () => {
+  setTimeout(() => {
+    if (autoplayButton().getAttribute('aria-checked') === 'true') {
+      autoplayButton().click()
       counter++
-      autoplayButton.dataset.counter = counter
+      autoplayButton().dataset.counter = counter
       console.info(`[Disable YouTube Autoplay]: Autoplay deactivation counter: ${counter} (${new Date().toLocaleTimeString()})`)
     }
-  }, 1000)
+    fightAutoplay()
+  }, 500)
 }
 
 const addGlobalStyle = (css) => {
@@ -39,10 +46,10 @@ const addGlobalStyle = (css) => {
   head.appendChild(style)
 }
 
-(function () {
+(() => {
   'use strict'
-  window.addEventListener('yt-navigate-finish', fightAutoplay, true)
-  fightAutoplay()
+  window.addEventListener('yt-navigate-finish', initializeAutoplayDisabler, true)
+  initializeAutoplayDisabler()
   addGlobalStyle(`
     .ytp-autonav-toggle-button[aria-checked=false]:after {
       content: attr(data-counter);
